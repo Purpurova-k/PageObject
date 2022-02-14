@@ -1,6 +1,9 @@
 package ru.netology.web.data;
 
 import lombok.Value;
+import ru.netology.web.page.DashboardPage;
+
+import java.util.Random;
 
 public class DataHelper {
     private DataHelper() {
@@ -29,6 +32,10 @@ public class DataHelper {
         return new VerificationCode("12345");
     }
 
+    public static VerificationCode getAnotherVerificationCodeFor(AuthInfo authInfo) {
+        return new VerificationCode("54321");
+    }
+
     @Value
     public static class CardInfo {
         private String number;
@@ -40,5 +47,34 @@ public class DataHelper {
 
     public static CardInfo getSecondCardInfo() {
         return new CardInfo("5559 0000 0000 0002");
+    }
+
+    public static CardInfo getAnotherCardInfo() {
+        return new CardInfo("5559 0000 0000 0000");
+    }
+
+
+    public static int getRandomAmount(int balance) {
+        Random random = new Random();
+        int amount = random.nextInt(balance);
+        return amount;
+    }
+
+
+    public static void returnInitialBalance() {
+        var dashboardPage = new DashboardPage();
+        var balanceFirstCard = dashboardPage.getCardBalance("0001");
+        var balanceSecondCard = dashboardPage.getCardBalance("0002");
+        if (balanceFirstCard == balanceSecondCard) {
+            return;
+        } else if (balanceFirstCard > balanceSecondCard) {
+            int difference = balanceFirstCard - balanceSecondCard;
+            var replenishmentPage = dashboardPage.transferMoneyTo("0002");
+            replenishmentPage.validTransferFrom(difference / 2, getFirstCardInfo());
+        } else if (balanceSecondCard > balanceFirstCard) {
+            int difference = balanceSecondCard - balanceFirstCard;
+            var replenishmentPage = dashboardPage.transferMoneyTo("0001");
+            replenishmentPage.validTransferFrom(difference / 2, DataHelper.getSecondCardInfo());
+        }
     }
 }

@@ -15,7 +15,6 @@ public class DashboardPage {
     private ElementsCollection cards = $$(".list__item");
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
-    private SelenideElement reloadButton = $("[data-test-id=action-reload]");
 
 
     public DashboardPage() {
@@ -30,7 +29,7 @@ public class DashboardPage {
         return Integer.parseInt(value);
     }
 
-    public TransferPage transferMoney(String lastNumbersCard) {
+    public TransferPage transferMoneyTo(String lastNumbersCard) {
         var replenishButton = cards.findBy(text(lastNumbersCard)).$("[data-test-id=action-deposit]");
         replenishButton.click();
         return new TransferPage();
