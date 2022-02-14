@@ -132,4 +132,27 @@ public class TransferTest {
         errorNotification.shouldBe(visible);
         $("[data-test-id=error-notification] .notification__content").shouldHave(text("Ошибка!"));
     }
+
+    // Падающий тест
+    @Test
+    public void shouldNotTransferMoneyBetweenSameCard() {
+        // авторизация
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verifyInfo = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verifyInfo);
+
+        // возврат изначального баланса на картах
+        DataHelper.returnInitialBalance();
+
+        // перевод средств
+        var transferPage = dashboardPage.transferMoneyTo("0001");
+        var amount = DataHelper.getRandomAmount(10000);
+        transferPage.invalidTransferFrom(amount, DataHelper.getFirstCardInfo());
+
+        // проверка
+        errorNotification.shouldBe(visible);
+        $("[data-test-id=error-notification] .notification__content").shouldHave(text("Ошибка!"));
+    }
 }
