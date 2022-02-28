@@ -18,8 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TransferTest {
 
-    private SelenideElement errorNotification = $("[data-test-id=error-notification]");
-
     @BeforeEach
     void setUp() {
         open("http://localhost:9999/");
@@ -97,17 +95,9 @@ public class TransferTest {
         // возврат изначального баланса на картах
         DataHelper.returnInitialBalance();
 
-        // перевод средств
+        // перевод средств и проверка на уведомление об ошибке
         var transferPage = dashboardPage.transferMoneyTo("0001");
-        $("[data-test-id=amount] input").sendKeys(Keys.chord(Keys.CONTROL, "a") + Keys.BACK_SPACE);
-        $("[data-test-id=amount] input").val("15000");
-        $("[data-test-id=from] input").sendKeys(Keys.chord(Keys.CONTROL, "a") + Keys.BACK_SPACE);
-        $("[data-test-id=from] input").val(String.valueOf(DataHelper.getSecondCardInfo()));
-        $("[data-test-id=action-transfer] span").click();
-
-        // проверка
-        errorNotification.shouldBe(visible, ofSeconds(10));
-        $("[data-test-id=error-notification] .notification__content").shouldHave(text("Ошибка!"));
+        transferPage.invalidTransferFrom(15000, DataHelper.getSecondCardInfo());
     }
 
 
@@ -129,9 +119,9 @@ public class TransferTest {
         transferPage.invalidTransferFrom(amount, DataHelper.getAnotherCardInfo());
 
         // проверка
-        errorNotification.shouldBe(visible);
-        $("[data-test-id=error-notification] .notification__content").shouldHave(text("Ошибка!"));
+        transferPage.errorNotificationShouldBeVisible();
     }
+
 
     // Падающий тест
     @Test
@@ -152,7 +142,6 @@ public class TransferTest {
         transferPage.invalidTransferFrom(amount, DataHelper.getFirstCardInfo());
 
         // проверка
-        errorNotification.shouldBe(visible);
-        $("[data-test-id=error-notification] .notification__content").shouldHave(text("Ошибка!"));
+        transferPage.errorNotificationShouldBeVisible();
     }
 }

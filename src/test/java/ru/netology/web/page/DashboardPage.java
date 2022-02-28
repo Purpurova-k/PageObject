@@ -34,6 +34,4 @@ public class DashboardPage {
         replenishButton.click();
         return new TransferPage();
     }
-
-
 }
